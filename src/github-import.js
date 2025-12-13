@@ -44,23 +44,40 @@ export async function fetchGitHubRepos(username) {
 /**
  * 将GitHub仓库转换为链接数据
  * @param {Array} repos - 仓库列表
+ * @param {string} username - GitHub用户名
  * @param {string} currentRepoName - 当前仓库名（排除）
  * @returns {Array} 链接数据数组
  */
-export function convertReposToLinks(repos, currentRepoName = 'my-app2025') {
+export function convertReposToLinks(repos, username, currentRepoName = 'my-app2025') {
   return repos
     .filter(repo => {
       // 排除当前仓库和fork的仓库（可选）
       return repo.name !== currentRepoName && !repo.fork;
     })
-    .map(repo => ({
-      title: repo.name,
-      url: repo.html_url,
-      description: repo.description || `GitHub仓库: ${repo.name}`,
-      homepage: repo.homepage, // 如果有主页链接
-      stars: repo.stargazers_count,
-      language: repo.language,
-    }))
+    .map(repo => {
+      // 优先使用homepage（自定义域名），否则尝试GitHub Pages链接，最后使用仓库链接
+      let appUrl = repo.homepage;
+      
+      if (!appUrl) {
+        // 尝试构建GitHub Pages链接：https://用户名.github.io/仓库名/
+        appUrl = `https://${username}.github.io/${repo.name}/`;
+      }
+      
+      // 如果homepage存在，使用homepage；否则使用GitHub Pages链接
+      // 仓库代码链接作为最后备选（但通常我们想要的是应用界面）
+      const finalUrl = repo.homepage || appUrl;
+      
+      return {
+        title: repo.name,
+        url: finalUrl,
+        description: repo.description || `GitHub应用: ${repo.name}`,
+        homepage: repo.homepage,
+        githubPagesUrl: appUrl,
+        repoUrl: repo.html_url, // 保留仓库链接作为参考
+        stars: repo.stargazers_count,
+        language: repo.language,
+      };
+    })
     .sort((a, b) => {
       // 按stars数量排序，然后按更新时间
       if (b.stars !== a.stars) {
@@ -79,7 +96,7 @@ export function convertReposToLinks(repos, currentRepoName = 'my-app2025') {
 export async function importGitHubRepos(username, addLinkCallback) {
   try {
     const repos = await fetchGitHubRepos(username);
-    const links = convertReposToLinks(repos);
+    const links = convertReposToLinks(repos, username);
     
     let successCount = 0;
     let skipCount = 0;
@@ -87,8 +104,8 @@ export async function importGitHubRepos(username, addLinkCallback) {
 
     for (const linkData of links) {
       try {
-        // 使用主页链接（如果有），否则使用仓库链接
-        const url = linkData.homepage || linkData.url;
+        // 使用应用链接（GitHub Pages或homepage），而不是代码仓库链接
+        const url = linkData.url; // 已经是处理后的应用链接
         
         // 构建描述
         let description = linkData.description;
@@ -97,6 +114,12 @@ export async function importGitHubRepos(username, addLinkCallback) {
         }
         if (linkData.stars > 0) {
           description += ` | ⭐ ${linkData.stars}`;
+        }
+        // 添加提示：这是应用链接
+        if (linkData.homepage) {
+          description += ' | 🌐 已部署';
+        } else {
+          description += ' | 📱 GitHub Pages';
         }
 
         addLinkCallback({
