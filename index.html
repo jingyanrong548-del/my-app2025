@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App链接收集器</title>
+  <script type="module" crossorigin src="/my-app2025/assets/index-C2NY9Y40.js"></script>
+  <link rel="stylesheet" crossorigin href="/my-app2025/assets/index-CVcBSO0c.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>我的App链接</h1>
+      <button class="btn-add" id="addBtn" aria-label="添加链接">+</button>
+    </header>
+
+    <main class="main">
+      <div class="links-grid" id="linksGrid">
+        <!-- 链接卡片将动态插入这里 -->
+      </div>
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <p>还没有添加任何链接</p>
+        <p class="empty-hint">点击右上角的 + 按钮添加第一个链接</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- 添加/编辑链接的模态框 -->
+  <div class="modal" id="linkModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">添加链接</h2>
+        <button class="btn-close" id="closeModal" aria-label="关闭">×</button>
+      </div>
+      <form id="linkForm" class="modal-form">
+        <input type="hidden" id="linkId">
+        <div class="form-group">
+          <label for="linkTitle">标题 *</label>
+          <input type="text" id="linkTitle" required placeholder="输入链接标题">
+        </div>
+        <div class="form-group">
+          <label for="linkUrl">URL *</label>
+          <input type="url" id="linkUrl" required placeholder="https://example.com">
+        </div>
+        <div class="form-group">
+          <label for="linkDescription">描述（可选）</label>
+          <textarea id="linkDescription" rows="3" placeholder="输入链接描述"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" id="cancelBtn">取消</button>
+          <button type="submit" class="btn btn-submit">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 删除确认模态框 -->
+  <div class="modal" id="deleteModal" style="display: none;">
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h2>确认删除</h2>
+        <button class="btn-close" id="closeDeleteModal" aria-label="关闭">×</button>
+      </div>
+      <div class="modal-body">
+        <p>确定要删除这个链接吗？此操作无法撤销。</p>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-cancel" id="cancelDeleteBtn">取消</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">删除</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
+
