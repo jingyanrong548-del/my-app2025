@@ -29,9 +29,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
   min-height: 100vh;
   color: var(--text-primary);
   line-height: 1.6;
+  margin: 0;
+  padding: 0;
 }
 
 .container {
@@ -224,17 +227,34 @@ body {
   text-align: center;
   padding: 4rem 2rem;
   color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.empty-state p:first-child {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .empty-state p {
-  font-size: 1.125rem;
+  font-size: 1rem;
   margin-bottom: 0.5rem;
 }
 
 .empty-hint {
   font-size: 0.875rem;
   color: var(--text-secondary);
-  opacity: 0.7;
+  opacity: 0.8;
+  margin-top: 0.5rem;
 }
 
 /* 模态框样式 */

@@ -1,5 +1,8 @@
 // 主入口文件
 
+// 导入样式
+import './styles.css';
+
 import {
   initApp,
   addLink,
