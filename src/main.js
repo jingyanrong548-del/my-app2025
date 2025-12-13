@@ -8,6 +8,7 @@ import {
   addLink,
   updateLink,
   deleteLink,
+  batchAddLinks,
   getEditingLinkId,
   getDeletingLinkId,
   clearForm,
@@ -15,6 +16,8 @@ import {
   hideModal,
   renderLinks,
 } from './app.js';
+
+import { importGitHubRepos } from './github-import.js';
 
 // 初始化应用
 document.addEventListener('DOMContentLoaded', () => {
@@ -98,12 +101,54 @@ function setupEventListeners() {
     });
   }
 
+  // GitHub导入按钮
+  const importBtn = document.getElementById('importBtn');
+  if (importBtn) {
+    importBtn.addEventListener('click', () => {
+      showModal('importModal');
+    });
+  }
+
+  // 导入模态框相关事件
+  const closeImportModal = document.getElementById('closeImportModal');
+  if (closeImportModal) {
+    closeImportModal.addEventListener('click', () => {
+      hideModal('importModal');
+      resetImportStatus();
+    });
+  }
+
+  const cancelImportBtn = document.getElementById('cancelImportBtn');
+  if (cancelImportBtn) {
+    cancelImportBtn.addEventListener('click', () => {
+      hideModal('importModal');
+      resetImportStatus();
+    });
+  }
+
+  const confirmImportBtn = document.getElementById('confirmImportBtn');
+  if (confirmImportBtn) {
+    confirmImportBtn.addEventListener('click', handleGitHubImport);
+  }
+
+  const importModal = document.getElementById('importModal');
+  if (importModal) {
+    importModal.addEventListener('click', (e) => {
+      if (e.target === importModal) {
+        hideModal('importModal');
+        resetImportStatus();
+      }
+    });
+  }
+
   // ESC键关闭模态框
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       hideModal('linkModal');
       hideModal('deleteModal');
+      hideModal('importModal');
       clearForm();
+      resetImportStatus();
     }
   });
 }
@@ -148,6 +193,84 @@ function handleDeleteConfirm() {
   if (deletingId) {
     deleteLink(deletingId);
     hideModal('deleteModal');
+  }
+}
+
+/**
+ * 处理GitHub导入
+ */
+async function handleGitHubImport() {
+  const usernameInput = document.getElementById('githubUsername');
+  const importStatus = document.getElementById('importStatus');
+  const importMessage = document.getElementById('importMessage');
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  const confirmImportBtn = document.getElementById('confirmImportBtn');
+
+  const username = usernameInput.value.trim();
+  if (!username) {
+    alert('请输入GitHub用户名');
+    return;
+  }
+
+  // 显示导入状态
+  importStatus.style.display = 'block';
+  importMessage.textContent = '正在获取GitHub仓库列表...';
+  progressBar.style.display = 'block';
+  progressFill.style.width = '0%';
+  confirmImportBtn.disabled = true;
+  confirmImportBtn.textContent = '导入中...';
+
+  try {
+    const result = await importGitHubRepos(username, (linkData) => {
+      batchAddLinks([linkData]);
+    });
+
+    if (result.success) {
+      progressFill.style.width = '100%';
+      importMessage.innerHTML = `
+        ✅ 导入完成！<br>
+        共找到 ${result.total} 个仓库<br>
+        成功导入 ${result.imported} 个链接<br>
+        ${result.skipped > 0 ? `跳过 ${result.skipped} 个（可能已存在）` : ''}
+      `;
+      
+      // 3秒后自动关闭
+      setTimeout(() => {
+        hideModal('importModal');
+        resetImportStatus();
+      }, 3000);
+    } else {
+      importMessage.textContent = `❌ 导入失败: ${result.error}`;
+      progressBar.style.display = 'none';
+    }
+  } catch (error) {
+    importMessage.textContent = `❌ 导入失败: ${error.message}`;
+    progressBar.style.display = 'none';
+    console.error('GitHub导入错误:', error);
+  } finally {
+    confirmImportBtn.disabled = false;
+    confirmImportBtn.textContent = '开始导入';
+  }
+}
+
+/**
+ * 重置导入状态
+ */
+function resetImportStatus() {
+  const importStatus = document.getElementById('importStatus');
+  const importMessage = document.getElementById('importMessage');
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  const confirmImportBtn = document.getElementById('confirmImportBtn');
+
+  if (importStatus) importStatus.style.display = 'none';
+  if (importMessage) importMessage.textContent = '';
+  if (progressBar) progressBar.style.display = 'none';
+  if (progressFill) progressFill.style.width = '0%';
+  if (confirmImportBtn) {
+    confirmImportBtn.disabled = false;
+    confirmImportBtn.textContent = '开始导入';
   }
 }
 

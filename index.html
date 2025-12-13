@@ -9,7 +9,17 @@
   <div class="container">
     <header class="header">
       <h1>我的App链接</h1>
-      <button class="btn-add" id="addBtn" aria-label="添加链接">+</button>
+      <div class="header-actions">
+        <button class="btn-import" id="importBtn" aria-label="从GitHub导入" title="从GitHub导入所有仓库">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>导入GitHub</span>
+        </button>
+        <button class="btn-add" id="addBtn" aria-label="添加链接">+</button>
+      </div>
     </header>
 
     <main class="main">
@@ -65,6 +75,32 @@
       <div class="form-actions">
         <button type="button" class="btn btn-cancel" id="cancelDeleteBtn">取消</button>
         <button type="button" class="btn btn-danger" id="confirmDeleteBtn">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GitHub导入模态框 -->
+  <div class="modal" id="importModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>从GitHub导入仓库</h2>
+        <button class="btn-close" id="closeImportModal" aria-label="关闭">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="githubUsername">GitHub用户名</label>
+          <input type="text" id="githubUsername" placeholder="输入GitHub用户名" value="jingyanrong548-del">
+        </div>
+        <div class="import-status" id="importStatus" style="display: none;">
+          <p id="importMessage"></p>
+          <div class="progress-bar" id="progressBar" style="display: none;">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-cancel" id="cancelImportBtn">取消</button>
+        <button type="button" class="btn btn-submit" id="confirmImportBtn">开始导入</button>
       </div>
     </div>
   </div>

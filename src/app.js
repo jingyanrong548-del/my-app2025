@@ -73,6 +73,35 @@ export function getAllLinks() {
 }
 
 /**
+ * 批量添加链接
+ * @param {Array} linksData - 链接数据数组
+ * @returns {number} 成功添加的数量
+ */
+export function batchAddLinks(linksData) {
+  let count = 0;
+  linksData.forEach(linkData => {
+    // 检查是否已存在相同URL的链接
+    const exists = links.some(link => link.url === linkData.url.trim());
+    if (!exists) {
+      const newLink = {
+        id: generateId(),
+        title: linkData.title.trim(),
+        url: linkData.url.trim(),
+        description: linkData.description?.trim() || '',
+        createdAt: new Date().toISOString(),
+      };
+      links.push(newLink);
+      count++;
+    }
+  });
+  if (count > 0) {
+    saveLinks(links);
+    renderLinks();
+  }
+  return count;
+}
+
+/**
  * 获取正在编辑的链接ID
  * @returns {string|null}
  */
