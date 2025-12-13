@@ -1,0 +1,17 @@
+{
+  "name": "my-app2025",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "App链接收集器 - 用于收集和管理自编app链接",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && gh-pages -d dist"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "gh-pages": "^6.1.0"
+  }
+}
+
