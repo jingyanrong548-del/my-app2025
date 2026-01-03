@@ -20,8 +20,17 @@ import {
 import { importGitHubRepos } from './github-import.js';
 import { importVercelProjects } from './vercel-import.js';
 
+// 应用版本号（从 package.json 同步）
+const APP_VERSION = '1.0.0';
+
 // 初始化应用
 document.addEventListener('DOMContentLoaded', () => {
+  // 显示应用版本号
+  const versionElement = document.getElementById('appVersion');
+  if (versionElement) {
+    versionElement.textContent = `v${APP_VERSION}`;
+  }
+  
   initApp();
   setupEventListeners();
 });

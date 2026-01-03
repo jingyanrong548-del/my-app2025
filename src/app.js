@@ -318,21 +318,37 @@ function createLinkCard(link) {
   const dragHandle = card.querySelector('.card-drag-handle');
   if (dragHandle) {
     dragHandle.draggable = true;
+    
+    // 防止拖拽手柄的默认行为干扰拖拽
+    dragHandle.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+      // 在 Mac 上，确保拖拽可以正常启动
+      if (e.button === 0) { // 左键
+        dragHandle.style.cursor = 'grabbing';
+      }
+    });
+    
+    dragHandle.addEventListener('mouseup', (e) => {
+      dragHandle.style.cursor = 'grab';
+    });
+    
     dragHandle.addEventListener('dragstart', (e) => {
       e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', link.id);
+      // 兼容性：同时设置 text/html
       e.dataTransfer.setData('text/html', link.id);
       card.classList.add('dragging');
+      // 在 Mac 上确保拖拽效果
+      e.dataTransfer.dropEffect = 'move';
     });
     
     dragHandle.addEventListener('dragend', (e) => {
       card.classList.remove('dragging');
       document.querySelectorAll('.link-card').forEach(c => c.classList.remove('drag-over'));
+      dragHandle.style.cursor = 'grab';
     });
     
-    // 拖拽手柄阻止点击事件传播
-    dragHandle.addEventListener('mousedown', (e) => {
-      e.stopPropagation();
-    });
+    // 拖拽手柄阻止点击事件传播（但不阻止拖拽）
     dragHandle.addEventListener('click', (e) => {
       e.stopPropagation();
     });
@@ -340,6 +356,7 @@ function createLinkCard(link) {
 
   card.addEventListener('dragover', (e) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
     const draggingCard = document.querySelector('.link-card.dragging');
     if (draggingCard && draggingCard !== card) {
@@ -349,15 +366,18 @@ function createLinkCard(link) {
 
   card.addEventListener('dragleave', (e) => {
     // 只有当离开到卡片外部时才移除drag-over类
-    if (!card.contains(e.relatedTarget)) {
+    const relatedTarget = e.relatedTarget;
+    if (!relatedTarget || !card.contains(relatedTarget)) {
       card.classList.remove('drag-over');
     }
   });
 
   card.addEventListener('drop', (e) => {
     e.preventDefault();
+    e.stopPropagation();
     card.classList.remove('drag-over');
-    const draggedId = e.dataTransfer.getData('text/html');
+    // 兼容性：尝试多种方式获取拖拽数据
+    const draggedId = e.dataTransfer.getData('text/plain') || e.dataTransfer.getData('text/html');
     if (draggedId && draggedId !== link.id) {
       updateLinkOrder(draggedId, link.id);
     }

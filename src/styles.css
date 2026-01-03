@@ -89,6 +89,12 @@ body {
   flex-shrink: 0;
 }
 
+.header-title-section {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
 .header h1 {
   font-size: 1.75rem;
   font-weight: 700;
@@ -97,6 +103,18 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin: 0;
+}
+
+.app-version {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  font-family: 'Monaco', 'Menlo', monospace;
+  opacity: 0.8;
 }
 
 .btn-add {
@@ -171,24 +189,35 @@ body {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-secondary);
   cursor: grab;
-  opacity: 0;
+  opacity: 0.6;
   transition: var(--transition);
   z-index: 10;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.card-drag-handle:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--primary-color);
 }
 
 .card-drag-handle:active {
   cursor: grabbing;
+  opacity: 1;
 }
 
 .link-card:hover .card-drag-handle {
-  opacity: 1;
+  opacity: 0.8;
 }
 
 .link-card::before {
@@ -564,8 +593,18 @@ body {
     padding: 1rem 1.5rem;
   }
 
+  .header-title-section {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
   .header h1 {
     font-size: 1.5rem;
+  }
+
+  .app-version {
+    font-size: 0.7rem;
   }
 
   .main {
