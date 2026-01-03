@@ -76,6 +76,8 @@ export function convertReposToLinks(repos, username, currentRepoName = 'my-app20
         repoUrl: repo.html_url, // 保留仓库链接作为参考
         stars: repo.stargazers_count,
         language: repo.language,
+        pushedAt: repo.pushed_at || repo.updated_at || new Date().toISOString(),
+        updatedAt: repo.updated_at || new Date().toISOString(),
       };
     })
     .sort((a, b) => {
@@ -122,10 +124,15 @@ export async function importGitHubRepos(username, addLinkCallback) {
           description += ' | 📱 GitHub Pages';
         }
 
+        // 使用更新时间生成版本号
+        const updateDate = new Date(linkData.pushedAt || linkData.updatedAt || Date.now());
+        const version = `${updateDate.getFullYear()}.${String(updateDate.getMonth() + 1).padStart(2, '0')}.${String(updateDate.getDate()).padStart(2, '0')}`;
+
         addLinkCallback({
           title: linkData.title,
           url: url,
           description: description,
+          version: version,
         });
         
         successCount++;
